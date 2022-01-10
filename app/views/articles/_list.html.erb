@@ -1,0 +1,42 @@
+<% if @articles.present? %>
+
+  <table class="table table-hover table-striped table-bordered">
+    <thead>
+      <tr>
+        <th scope='col'>Title</th>
+        <th scope='col'>Content</th>
+        <th scope='col' class='headerSortDown text-nowrap'>Published on</th>
+        <th scope='col'></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @articles.each do |article| %>
+        <tr>
+          <td><%= article.title %></td>
+          <td><%= truncate(article.content) %></td>
+          <td><%= article.published_on %></td>
+          <td>
+            <div class='float-right'>
+              <%= link_to 'Show', article , class: 'btn btn-outline-primary' %>
+              <%= link_to 'Edit', edit_article_path(article) , class: 'btn btn-outline-primary' %>
+              <%= link_to 'Destroy', article, method: :delete, data: { confirm: 'Are you sure?' } , class: 'btn btn-danger' %>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <hr />
+
+  <nav aria-label="pagination">
+    <%= paginate @articles %>
+  </nav>
+
+<% else %>
+  <p class="alert alert-info">
+  No documents have been found <%= @category.present? ? 'in this category' : 'by this author' %>.
+  </p>
+<% end %>
+
