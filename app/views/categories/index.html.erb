@@ -1,0 +1,59 @@
+<p id="notice"><%= notice %></p>
+
+<h1>
+  Categories
+  <small class='float-right'>
+    <%= link_to 'New Category', new_category_path, class: 'btn btn-outline-info' %>
+  </small>
+</h1>
+
+<hr>
+
+<%= form_tag search_categories_path, method: 'get' do %>
+  <div class="input-group">
+    <%= text_field_tag :q, params[:q], class: 'form-control', placeholder: 'Search...' %>
+  </div>
+  <% if @msg.present? %>
+  <div class='alert alert-danger mt-3'>
+    <%= @msg %>
+  </div>
+  <% end %>
+<% end %>
+
+<% if @categories.present? %>
+<table class='table mt-3 table-hover table-striped table-bordered'>
+  <thead>
+    <tr>
+      <th scope="col" class='headerSortUp'>Title</th>
+      <th scope="col"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @categories.each do |category| %>
+      <tr>
+        <td><%= category.title %></td>
+        <td>
+          <h5 title="Articles in this category" class='float-left'><span class='badge badge-warning'><%= category.articles.size %></span></h5>
+          <div class='float-right'>
+            <%= link_to 'Show', category, class: 'btn btn-outline-info' %>
+            <%= link_to 'Edit', edit_category_path(category), class: 'btn btn-outline-info' %>
+            <%= link_to 'Destroy', category, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger' %>
+          </div>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<nav aria-label="pagination">
+  <%= paginate @categories %>
+</nav>
+
+<% elsif params[:q].present? && params[:q].length > 1 %>
+<div class='alert alert-warning mt-3'>
+    No categories found with keyword <strong><%= params[:q] %></strong>
+  </div>
+<% end %>

@@ -1,0 +1,28 @@
+<footer class="pb-4 bg-primary-3 text-light" id="footer">
+  <div class="container">
+    <div class="row mb-5">
+      <div class="col-12 col-md-3">
+        <h5>Navigate</h5>
+        <ul class="nav flex-column">
+          <%= menu_item('articles') %>
+          <%= menu_item('categories') %>
+          <%= menu_item('authors') %>
+          <%= menu_item('authorships') %>
+        </ul>
+      </div>
+      <div class="col-12 col-md-9">
+        <h4>A powerful search engine</h4>
+        <h5>with Bootstrap 4</h5>
+        <h5>and Elasticsearch <%= es_version %></h5>
+        <h5>and Rails <%= Rails.version %></h5>
+      </div>
+    </div>
+
+    <div class="row justify-content-center">
+      <div class="col col-md-auto text-center">
+        <small class="text-muted">Made by Dang Khoa - ©2021</a>
+        </small>
+      </div>
+    </div>
+  </div>
+</footer>
