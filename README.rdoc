@@ -1,0 +1,12 @@
+== README
+
+This sample project demonstrate how to use dynamic Bootstrap dialogs to create, read,  update, and delete records in Rails 4.2 application.
+
+1 - add to Gemfile
+# Transpile app-like JavaScript. Read more: https://github.com/rails/webpacker
+gem 'webpacker'
+
+2 - run: bundle exec rake webpacker:install
+3 -
+    mkdir -p app/assets/config
+    touch app/assets/config/manifest.js
