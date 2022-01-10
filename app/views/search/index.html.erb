@@ -1,0 +1,149 @@
+<div class="col-12 alert alert-light">
+  <%= form_tag search_path, method: 'get', role: 'search' do %>
+    <div class="input-group select-group">
+      <%= text_field_tag :q, params[:q], class: 'form-control', placeholder: 'Search...' %>
+      <%= select_tag(:t, options_for_select(search_method_options, params[:t] || 'match'), { :class => 'custom-select input-group-addon' }) %>
+    </div>
+
+    <div id="form-options" class="clearfix">
+      <div class="btn-group pull-left">
+        <label class="checkbox-inline">
+          <%= check_box_tag 'comments', 'y', params[:comments] == 'y', onclick: "$(this).closest('form').submit()" %>
+          Search in comments?
+        </label>
+        <% params.slice(:a, :c, :s).each do |name, value| %>
+          <%= hidden_field_tag name, value %>
+        <% end %>
+      </div>
+      
+      <% if @articles.size > 0 %>
+      <div class="btn-group float-right">
+        <div class="btn-group" role="group" aria-label="Orders">
+          <button class="btn btn-outline-info">
+            Displaying <%= (params[:page] || 1).to_i.ordinalize %> page with <%= @articles.size %> articles of <strong>total <%= @articles.total %></strong>
+          </button>
+          <div class="btn-group" role="group">
+            <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Sort by
+            </button>
+            <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+              <li>
+                <%=
+                  link_to "Published On", search_path(@search_params.merge(s: 'published_on')),
+                  class: 'dropdown-item'
+                %>
+              </li>
+              <li>
+                <%=
+                  link_to "Relevancy", search_path(@search_params.merge(s: nil)),
+                  class: 'dropdown-item' unless params[:q].blank?
+                %>
+              </li>
+            </div>
+          </div>
+        </div>
+      </div>
+      <% end %>
+    </div>
+  <% end %>
+  <hr>
+</div>
+
+<div class="row">
+  <% if @articles.size > 0 || params[:q].blank? %>
+
+  <div class="col-3">
+    <div id="facets">
+      <div class="categories card">
+        <div class="card-header">
+          <!-- <%= link_to 'All Sections &rarr;'.html_safe, search_path(@search_params.merge(c: nil)) %> -->
+          <%= link_to 'All Sections &rarr;'.html_safe, sections_path %>
+        </div>
+
+        <ul class="list-group list-group-flush">
+          <% @articles.response.response['aggregations']['categories']['categories']['buckets'].each do |c| %>
+            <li class='<%= "list-group-item#{' active' if params[:c] == c['key']}" %>'>
+            <%=
+              link_to search_path(@search_params.merge(c: c['key'])),
+                class: (params[:c] == c['key'] ? 'text-white' : '') do
+                c['key'].titleize.html_safe + content_tag(:small, c['doc_count'], class: 'badge').html_safe
+              end
+            %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+
+      <div class="authors card my-4">
+        <div class="card-header">
+          <%# <%= link_to 'All Authors &rarr;'.html_safe, search_path(@search_params.merge(a: nil)) %>
+          <%= link_to 'All Authors &rarr;'.html_safe, writers_path %>
+        </div>
+        
+        <ul class="list-group list-group-flush">
+          <% @articles.response.response['aggregations']['authors']['authors']['buckets'].each do |a| %>
+            <li class='<%= "list-group-item#{' active' if params[:a] == a['key']}" %>'>
+            <%=
+              link_to search_path(@search_params.merge(a: a['key'])),
+                class: (params[:a] == a['key'] ? 'text-white' : '') do
+                a['key'].titleize.html_safe + content_tag(:small, a['doc_count'], class: 'badge').html_safe
+              end
+            %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+
+      <div class="authors card">
+        <div class="card-header">
+          <%= link_to 'Any Date &rarr;'.html_safe, search_path(@search_params.merge(w: nil)) %>
+        </div>
+
+        <ul class="list-group list-group-flush">
+          <% @articles.response.response['aggregations']['published']['published']['buckets'].each do |w| %>
+            <%
+              __start = Time.at(w['key']/1000)
+              __end   = __start.end_of_week
+              __date  = __start.to_date.to_s(:iso)
+            %>
+            <% if w['doc_count'] > 0 %>
+              <li class='<%= "list-group-item#{' active' if params[:w] == __date}" %>'>
+                <%=
+                link_to search_path(@search_params.merge(w: __date)),
+                  class: (params[:w] == __date ? 'text-white' : '') do
+                    "#{__start.to_date.to_s(:short)} &mdash; #{__end.to_date.to_s(:short)}".html_safe + \
+                      content_tag(:small, w['doc_count'], class: 'badge').html_safe
+                end
+                %>
+              </li>
+            <% end %>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-9">
+    <%= render 'articles/results' %>
+  </div>
+
+  <% elsif params[:q].present? %>
+
+  <div class="offset-2 col-8">
+    <p class="alert alert-info">
+      No documents have been found.
+      <%
+      has_suggest_title = @articles.response.suggestions['suggest_title'].present? && @articles.response.suggestions['suggest_title'].first&.options.present?
+      suggest_body = @articles.response.suggestions['suggest_body'].present? && @articles.response.suggestions['suggest_body'].first&.options.present?
+      %>
+      <% if @articles.response.suggestions.present? && (has_suggest_title || suggest_body) %>
+        Maybe you mean
+        <%= @articles.response.suggestions.map { |k,v| v.first['options'] }.flatten.map {|v| v['text']}.uniq.map do |term|
+          link_to term, search_path(@search_params.merge(q: term))
+        end.to_sentence(last_word_connector: ' or ').html_safe %>?
+      <% end %>
+    </p>
+  </div>
+
+  <% end %>
+</div>

@@ -1,0 +1,47 @@
+<% if @articles.present? %>
+
+  <div id="results">
+    <% @articles.each do |article|  %>
+    <div class="result">
+      <h3 class="title">
+      <%= link_to (article.try(:highlight).try(:title) ? article.highlight.title.join.html_safe : article.title), article_url(article.id) %>
+      </h3>
+
+      <p class="body">
+      <% if article.try(:highlight).try(:abstract) %>
+        <%= article.highlight.abstract.join.html_safe %>
+      <% else  %>
+        <%= article.try(:highlight).try(:content) ? article.highlight.content.join('&hellip;').html_safe : article.abstract %>
+      <% end  %>
+      </p>
+
+      <% if comments = article.try(:highlight) && article.highlight['comments.body'] %>
+      <p class="comments">
+      Comments: <%= comments.join('&hellip;').html_safe %>
+      </p>
+      <% end  %>
+
+      <p class="text-muted">
+      <small>Category: <%= article.categories.to_sentence %></small> |
+      <small>Authors: <%= article.authors.map(&:full_name).to_sentence %></small> |
+      <small>Published: <%= article.published_on %></small>
+      <% if article._score %>
+      |
+      <small>Score: <%= article._score %></small>
+      <% end %>
+      </p>
+    </div>
+    <% end %>
+  </div>
+
+  <br />
+
+  <nav aria-label="pagination">
+    <%= paginate @articles %>
+  </nav>
+
+<% else %>
+  <p class="alert alert-info">
+  No documents have been found <%= params[:c].present? ? 'in this category' : 'by this author' %>.
+  </p>
+<% end %>
