@@ -1,0 +1,21 @@
+<div id="main-list">
+  <% @authors.in_groups_of(3, false) do |group| %>
+  <div class="card-group">
+    <% group.each do |author| %>
+    <div class="card" data-id="<%= author.id %>">
+      <div class="card-body">
+        <h5 class="card-title"><%= link_to author.full_name, search_path({ a: author.full_name }) %></h5>
+        <p class="card-text"></p>
+        <h5 title="Articles by this author"><span class='badge badge-info'><%= author.articles.size %></span></h5>
+      </div>
+    </div>
+    <% end %>
+  </div>
+  <% end %>
+</div>
+
+<br />
+
+<nav aria-label="pagination">
+<%= paginate @authors %>
+</nav>

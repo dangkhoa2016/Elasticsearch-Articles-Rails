@@ -1,0 +1,25 @@
+<p id="notice"><%= notice %></p>
+
+<div class="alert alert-dark">
+  <div class='pull-right'>
+    <%= link_to 'Edit', edit_article_path(@article) %> |
+    <%= link_to 'Back', :back %>
+  </div>
+</div>
+
+<div class="alert" role="alert">
+  <h4 class="alert-heading"><%= @article.title %></h4>
+  <p>
+    <%= raw badge_categories(@article.categories) %>
+  </p>
+  <p>
+    <%= raw @article.content.gsub(/\r\n|\n/, '<br/>') %>
+  </p>
+  <hr />
+  <p class="mb-0">
+    <strong>Published On: </strong>
+    <%= @article.published_on %>
+    <strong>Author: </strong>
+    <%= @article.authors.map(&:full_name).to_sentence %>
+  </p>
+</div>
