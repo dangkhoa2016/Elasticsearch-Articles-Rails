@@ -1,0 +1,22 @@
+.table thead th { position: relative; }
+.headerSortDown:after,
+.headerSortUp:after{
+    content: ' ';
+    position: absolute;
+    right: .75rem;
+    border: 7px solid transparent;
+}
+.headerSortDown:after{
+    top: 19px;
+    border-top-color: silver;
+}
+.headerSortUp:after{
+    top: 18px;
+    border-bottom-color: silver;
+}
+.headerSortDown,
+.headerSortUp {
+    padding-left: 20px;
+}
+.select-group input.form-control{ width: 85% }
+.select-group select.input-group-addon { width: 15%; }
