@@ -1,0 +1,21 @@
+<div id="main-list">
+  <% @categories.in_groups_of(3, false) do |group| %>
+  <div class="card-group">
+    <% group.each do |category| %>
+    <div class="card" data-id="<%= category.id %>">
+      <div class="card-body">
+        <h5 class="card-title"><%= link_to category.title, search_path({ c: category.title }) %></h5>
+        <p class="card-text"></p>
+        <h5 title="Articles in this category"><span class='badge badge-info'><%= category.articles.size %></span></h5>
+      </div>
+    </div>
+    <% end %>
+  </div>
+  <% end %>
+</div>
+
+<br />
+
+<nav aria-label="pagination">
+<%= paginate @categories %>
+</nav>
